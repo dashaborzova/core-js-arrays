@@ -125,7 +125,7 @@ function getAverage(arr) {
   const sum = arr
     .map(Number)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
-  return sum ? (sum / arr.length).toFixed(2) : 0;
+  return sum ? +(sum / arr.length).toFixed(2) : 0;
 }
 
 /**
@@ -154,8 +154,8 @@ function isSameLength(arr) {
  *    isValueEqualsIndex([2, 1, 0, 4, 5]) => true
  *    isValueEqualsIndex([10, 20, 30, 40, 50]) => false
  */
-function isValueEqualsIndex(/* arr */) {
-  throw new Error('Not implemented');
+function isValueEqualsIndex(arr) {
+  return arr.every((currentValue) => currentValue <= arr.length);
 }
 
 /**
@@ -200,7 +200,7 @@ function getHead(arr, n) {
  *    getTail([ 'a', 'b', 'c', 'd'], 0) => []
  */
 function getTail(arr, n) {
-  return arr.slice(-n);
+  return arr.flat(Infinity).slice(-n);
 }
 
 /**
@@ -264,15 +264,11 @@ function distinct(arr) {
  *    createNDimensionalArray(4, 2) => [[[[0, 0], [0, 0]], [[0, 0], [0, 0]]], [[[0, 0], [0, 0]], [[0, 0], [0, 0]]]]
  *    createNDimensionalArray(1, 1) => [0]
  */
-function createNDimensionalArray(n, size) {
-  if (n > 1) {
-    const a = [];
-    for (let i = 0; i < size; i += 1) {
-      a.push(createNDimensionalArray(n - 1, size));
-    }
-    return a;
-  }
-  return new Array(size).fill(0);
+function createNDimensionalArray(n, size, currentDepth = 0) {
+  const arr = new Array(size).fill(0);
+  return currentDepth + 1 === n
+    ? arr
+    : arr.map(() => createNDimensionalArray(n, size, currentDepth + 1));
 }
 
 /**
@@ -303,8 +299,10 @@ function flattenArray(nestedArray) {
  *   selectMany([[1, 2], [3, 4], [5, 6]], (x) => x) =>   [ 1, 2, 3, 4, 5, 6 ]
  *   selectMany(['one','two','three'], (x) => x.split('')) =>   ['o','n','e','t','w','o','t','h','r','e','e']
  */
-function selectMany(/* arr, childrenSelector */) {
-  throw new Error('Not implemented');
+function selectMany(arr, childrenSelector) {
+  let result = arr.map(childrenSelector);
+  result = [].concat(...result);
+  return result;
 }
 
 /**
@@ -377,8 +375,16 @@ function generateOdds(len) {
  *   getElementByIndices(['one','two','three'], [2]) => 'three'  (arr[2])
  *   getElementByIndices([[[ 1, 2, 3]]], [ 0, 0, 1 ]) => 2        (arr[0][0][1])
  */
-function getElementByIndices(/* arr, indices */) {
-  throw new Error('Not implemented');
+function getElementByIndices(arr, indices) {
+  let newArr = [].concat(...arr);
+  newArr = [].concat(...newArr);
+
+  const sumOfIndexes = indices.reduce((previousValue, currentValue) => {
+    return previousValue + currentValue;
+  });
+
+  const result = newArr[sumOfIndexes];
+  return result;
 }
 
 /**
@@ -604,8 +610,16 @@ function sortDigitNamesByNumericOrder(arr) {
  *   swapHeadAndTail([]) => []
  *
  */
-function swapHeadAndTail(/* arr */) {
-  throw new Error('Not implemented');
+function swapHeadAndTail(arr) {
+  let newArr = [];
+  const tail = arr.slice(-(arr.length / 2));
+  const head = arr.slice(0, arr.length / 2);
+  if (arr.length % 2 !== 0 && arr.length > 1) {
+    newArr = [...tail, arr[Math.floor(arr.length / 2)], ...head];
+    return newArr;
+  }
+  newArr = [...tail, ...head];
+  return newArr;
 }
 
 module.exports = {
